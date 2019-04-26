@@ -1,0 +1,56 @@
+{
+  "name": "job-posts",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "link": {
+      "type": "string",
+      "required": true,
+      "mysql": {
+        "dataType": "LONGTEXT"
+      }
+    },
+    "date_post": {
+      "type": "string",
+      "required": false
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "jobType": {
+      "type": "string",
+      "required": false
+    },
+    "text": {
+      "type": "string",
+      "required": false,
+      "mysql": {
+        "dataType": "LONGTEXT"
+      }
+    },
+    "company": {
+      "type": "string",
+      "required": true
+    },
+    "location": {
+      "type": "string",
+      "required": true
+    },
+    "summary": {
+      "type": "string",
+      "required": true
+    },
+    "salary": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

@@ -1,0 +1,39 @@
+{
+  "name": "notifications",
+  "base": "PersistedModel",
+  "idInjection": true,
+   "options": {
+    "validateUpsert": true,
+    "strictObjectIDCoercion": true
+  },
+  "properties": {
+    "userID": {
+      "type": "string",
+      "required": true
+    },
+    "notificationType": {
+      "type": "string",
+      "required": true
+    },
+    "keyword": {
+      "type": "string",
+      "required": false
+    },
+    "token": {
+      "type": "string",
+      "required": true
+    },
+    "count": {
+      "type": "number",
+      "required": false
+    },
+    "enabled": {
+      "type": "boolean",
+      "required": false
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [{}],
+  "methods": {}
+}

@@ -1,0 +1,27 @@
+{
+  "db": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "jobsearch",
+    "username": "root",
+    "password": "1234",
+    "name": "db",
+    "connector": "mysql"
+  },
+  "emailDataSource": {
+    "name": "emailDataSource",
+    "connector": "mail",
+    "transports": [
+      {
+        "type": "SMTP",
+        "host": "smtp.gmail.com",
+        "secure": true,
+        "port": 465,
+        "auth": {
+          "user": "searchappjob@gmail.com",
+          "pass": "jawad123"
+        }
+      }
+    ]
+  }
+}
