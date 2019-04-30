@@ -74,8 +74,6 @@ module.exports = function(Notifications) {
 	
 	Notifications.customCreate = function(data, options, callback) {
 		var jobsPost = app.models.indeedJobs;
-		//if not data make sure to handle
-
 	    let notificationTypes = data.notificationType.split("_");
 	    let keywords = data.keywords.split("_");
 	    let userID = data.userID;
@@ -90,62 +88,75 @@ module.exports = function(Notifications) {
 	    	keyword: data.keywords,
 	    	enabled: true
 	    }
-	    async.eachOfSeries(notificationTypes, function(item, index, lb) {
-	    	if (!keywords[index]) return lb("Error, make sure ntoification type and keywords are same length");
-			if (item == 'shortlist') return lb("shortlist");
-			if (!item) return lb("Error, empty");
-			let keywordsArray = keywords[index].split(",");
-			let keywordSearchObject = {
-				or:[]
-			} 
-			async.eachSeries(keywordsArray, function(keyItem, lb2) {
-				let keywordObject= {};
-				keywordObject[item] = {
-					like: "%" + keyItem + "%"
-				}
-				keywordSearchObject.or.push(keywordObject);
-				lb2();
-
-			}, function(err) {
-				searchObjectsArray.push(keywordSearchObject);
-				lb();
+		if (keywords == '') {
+			notificationObject.count = 0;
+			Notifications.upsertWithWhere(upsertData, notificationObject,  function(err, shortlistNotification) {
+				if (err) return callback(err);
+				return callback(err, {Status: shortlistNotification});
 			});
+		} else {
+			    async.eachOfSeries(notificationTypes, function(item, index, lb) {
+			    	if (!keywords[index]) return lb("Error, make sure ntoification type and keywords are same length");
+					if (item == 'shortlist') return lb("shortlist");
+					if (!item) return lb("Error, empty");
+					let keywordsArray = keywords[index].split(",");
+					let keywordSearchObject = {
+						or:[]
+					} 
+					async.eachSeries(keywordsArray, function(keyItem, lb2) {
+						let keywordObject= {};
+						keywordObject[item] = {
+							like: "%" + keyItem + "%"
+						}
+						keywordSearchObject.or.push(keywordObject);
+						lb2();
 
-	    }, function(err) {
-
-	    	if (err == 'shortlist') {
-	    		let shortlistObject = {
-	    			userID: userID,
-	    			notificationType: "shortlist",
-	    			token: token,
-	    			count: 0,
-	    			keyword: null,
-	    			enabled: 1
-	    		}
-	    		Notifications.upsertWithWhere(upsertData, shortlistObject,  function(err, shortlistNotification) {
-	    			if (err) return callback(err);
-	    			return callback(err, {Status: shortlistNotification});
-	    		});
-	    	} else if (err) {
-	    		return callback(err);
-	    	} else {
-	    	let countObject = {
-	    		where: {
-	    			and: searchObjectsArray
-	    		}
-	    	}
-
-	    		jobsPost.count(countObject.where, function(err, count) {
-					notificationObject.count = count
-						if (err) return callback(err);
-					Notifications.upsertWithWhere(upsertData, notificationObject, function(err, object) {
-						if (err) return callback(err);
-						return callback(err, {Notifications: object})
-
+					}, function(err) {
+						searchObjectsArray.push(keywordSearchObject);
+						lb();
 					});
-				});
-			}
-	    });
+
+			    }, function(err) {
+
+			    	if (err == 'shortlist') {
+			    		let shortlistObject = {
+			    			userID: userID,
+			    			notificationType: "shortlist",
+			    			token: token,
+			    			count: 0,
+			    			keyword: null,
+			    			enabled: 1
+			    		}
+			    		Notifications.upsertWithWhere(upsertData, shortlistObject,  function(err, shortlistNotification) {
+			    			if (err) return callback(err);
+			    			return callback(err, {Status: shortlistNotification});
+			    		});
+			    	} else if (err) {
+			    		return callback(err);
+			    	} else {
+			    	let countObject = {
+			    		where: {
+			    			and: searchObjectsArray
+			    		}
+			    	}
+			    		jobsPost.count(countObject.where, function(err, count) {
+							notificationObject.count = count
+								if (err) return callback(err);
+							Notifications.upsertWithWhere(upsertData, notificationObject, function(err, object) {
+								if (err) return callback(err);
+								return callback(err, {Notifications: object})
+
+							});
+						});
+					}
+			    });
+
+
+
+
+
+
+		}
 	  }
 	Notifications.updateNotification = function(data, options, callback) {
 		//dont need to check if empty because lucas wont ever send empty
