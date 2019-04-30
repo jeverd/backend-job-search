@@ -1,12 +1,14 @@
 'use strict'; 
 
 const async = require("async");
+const _ = require('lodash');
 
 var app = require('../../server/server');
 
 
 module.exports = function(Notifications) {
-	Notifications.remoteMethod('userID', {
+
+	Notifications.remoteMethod('customCreate', {
 	  accepts: [
 	    { arg: 'data', type: 'object', http: { source: 'body' } },
 	    // { arg: 'page', type:'string', required: true},
@@ -14,9 +16,8 @@ module.exports = function(Notifications) {
 
 	  ],
 	  returns: { arg: 'result', type: 'Object', root: true },
-	  http: { path: '/userID', verb: 'post' }
+	  http: { path: '/customCreate', verb: 'post' }
 	});
-
 	Notifications.remoteMethod('createNotification', {
 	  accepts: [
 	    { arg: 'data', type: 'object', http: { source: 'body' } },
@@ -70,7 +71,78 @@ module.exports = function(Notifications) {
 			}
 		});	
 	}
+	
+	Notifications.customCreate = function(data, options, callback) {
+		var jobsPost = app.models.indeedJobs;
+		//if not data make sure to handle
 
+	    let notificationTypes = data.notificationType.split("_");
+	    let keywords = data.keywords.split("_");
+	    let userID = data.userID;
+	    let token = data.token;
+	    let searchObjectsArray = [];
+	    var notificationObject = {
+	    	userID: userID,
+	    	token: token,
+	    	notificationType: data.notificationType,
+	    	keyword: data.keywords,
+	    	enabled: true
+	    }
+	    async.eachOfSeries(notificationTypes, function(item, index, lb) {
+	    	if (!keywords[index]) return lb("Error, make sure ntoification type and keywords are same length");
+			if (item == 'shortlist') return lb("shortlist");
+			if (!item) return lb("Error, empty");
+			let keywordsArray = keywords[index].split(",");
+			let keywordSearchObject = {
+				or:[]
+			} 
+			async.eachSeries(keywordsArray, function(keyItem, lb2) {
+				let keywordObject= {};
+				keywordObject[item] = {
+					like: "%" + keyItem + "%"
+				}
+				keywordSearchObject.or.push(keywordObject);
+				lb2();
+
+			}, function(err) {
+				searchObjectsArray.push(keywordSearchObject);
+				lb();
+			});
+
+	    }, function(err) {
+	    	if (err == 'shortlist') {
+	    		let shortlistObject = {
+	    			userID: userID,
+	    			notificationType: "shortlist",
+	    			token: token,
+	    			count: 0,
+	    			keyword: null,
+	    			enabled: 1
+	    		}
+	    		Notifications.upsertWithWhere(shortlistObject, function(err, shortlistNotification) {
+	    			if (err) return callback(err);
+	    			return callback(err, {Status: shortlistNotification});
+	    		});
+	    	} else if (err) {
+	    		return cb(err);
+	    	} else {
+	    		 	//part if it isnt a shortlist
+	    	//get count  //change from indeed to jobs-post after finished testing.
+	    	let countObject = {
+	    		where: {
+	    			and: searchObjectsArray
+	    		}
+	    	}
+	    	console.log(countObject.where.and)
+			jobsPost.count(countObject.where, function(err, count) {
+				notificationObject.count = count
+				Notifications.create(notificationObject, function(err, object) {
+					return callback(err, {Notifications: object})
+				})
+				});
+	    	}
+			})
+	    }
 	Notifications.updateNotification = function(data, options, callback) {
 		//dont need to check if empty because lucas wont ever send empty
 		var search = app.models.Search
@@ -118,7 +190,7 @@ module.exports = function(Notifications) {
 		});
 	}
 	Notifications.createNotification = function(data, options, cb) {
-		//create the notification
+		
 		var search = app.models.Search
 		let locationObject = {};
 		let shortlistObject = {};
@@ -145,14 +217,9 @@ module.exports = function(Notifications) {
 		locationObject.enabled = true;
 		tagObject.enabled = true;
 		shortlistObject.enabled = true;
-
-
-
-
-
 		//leaving count for shortlist as 0 fix later on.
 		async.parallel([
-
+			
 			function(cb1) {
 				if (!data.tag) {
 					tagObject.count = 0;
@@ -177,7 +244,9 @@ module.exports = function(Notifications) {
 				});
 			}
 		], function(err, result) {
+			console.log(result);
 			result.push(shortlistObject);
+			if (result.length < 3)   return cb(err, {Status: "Success - Didnt create new shortlist notification"})   //this if statement here to prevent creation of shortlist when only a tag or location notification is created
 			Notifications.create(result, function(err, status) {
 				if (err) return cb(err);
 				return cb(err, {Status:"Success"});
@@ -206,57 +275,5 @@ module.exports = function(Notifications) {
 		});	
 	}
 
-	Notifications.userID = function(data, options, cb) {   //
-		var indeed = app.models.Jobposts;
-		var search = app.models.Search
-		let searchObject = {
-			where:{}
-		}
-		console.log(data);
-
-
-		searchObject.where.and = [
-			{userID:data.userID},
-			{token:data.token},
-			{notificationType:data.notificationType},
-			{keyword:data.keyword}
-			]
-		
-		let notiData = {
-			userID:data.userID,
-			token:data.token,
-			notificationType:data.notificationType,
-			keyword:data.keyword
-		}
-		// let indeedSearch = {[data.notificationType]: {like: "%" + data.keyword + "%"}}
-		// console.log(indeedSearch)
-		//split the notification type + keyword 
-		let type1 = data.notificationType.split("_")[0]
-		let type2 = data.notificationType.split("_")[1] || ""
-
-		let key1 = data.keyword.split("_")[0]
-		let key2 = data.keyword.split("_")[1] || ""
-
-		//do checks 
-		if (key1 == null || type1 == null) {
-			return cb("ERROR: make sure you have somthing for notification, and or keyword in format x_y");
-		} 
-		search.notification(key1, type1, type2, key2, {}, function(err, count)  {
-			console.log(count)
-			if (err) return cb(err);
-			notiData.count = count.count;
-		Notifications.findOrCreate(searchObject, notiData, function(err, instance, created) {
-		    if (err) return cb(err);
-		    if (created) {
-		    	return cb(null, {"Message":"Created new Notifications"});
-		    } else {
-		    	return cb({
-		    		err: "Notifications already in db"
-		    	});
-		    }
-	});
-})
-
-	}
 
 }
