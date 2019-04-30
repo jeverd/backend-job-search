@@ -80,6 +80,7 @@ module.exports = function(Notifications) {
 	    let keywords = data.keywords.split("_");
 	    let userID = data.userID;
 	    let token = data.token;
+	    let upsertData = {id:data.id}
 	    let searchObjectsArray = [];
 	    var notificationObject = {
 	    	userID: userID,
@@ -110,6 +111,7 @@ module.exports = function(Notifications) {
 			});
 
 	    }, function(err) {
+
 	    	if (err == 'shortlist') {
 	    		let shortlistObject = {
 	    			userID: userID,
@@ -119,30 +121,32 @@ module.exports = function(Notifications) {
 	    			keyword: null,
 	    			enabled: 1
 	    		}
-	    		Notifications.upsertWithWhere(shortlistObject, function(err, shortlistNotification) {
+	    		Notifications.upsertWithWhere(upsertData, shortlistObject,  function(err, shortlistNotification) {
 	    			if (err) return callback(err);
 	    			return callback(err, {Status: shortlistNotification});
 	    		});
 	    	} else if (err) {
 	    		return cb(err);
 	    	} else {
-	    		 	//part if it isnt a shortlist
-	    	//get count  //change from indeed to jobs-post after finished testing.
 	    	let countObject = {
 	    		where: {
 	    			and: searchObjectsArray
 	    		}
 	    	}
-	    	console.log(countObject.where.and)
-			jobsPost.count(countObject.where, function(err, count) {
-				notificationObject.count = count
-				Notifications.create(notificationObject, function(err, object) {
-					return callback(err, {Notifications: object})
-				})
+
+
+	    		jobsPost.count(countObject.where, function(err, count) {
+					notificationObject.count = count
+						if (err) return callback(err);
+					jobsPost.upsertWithWhere(upsertData, notificationObject, function(err, object) {
+						if (err) return callback(err);
+						return callback(err, {Notifications: object})
+
+					});
 				});
-	    	}
-			})
-	    }
+			}
+	    });
+	  }
 	Notifications.updateNotification = function(data, options, callback) {
 		//dont need to check if empty because lucas wont ever send empty
 		var search = app.models.Search

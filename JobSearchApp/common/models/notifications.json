@@ -9,11 +9,11 @@
   "properties": {
     "userID": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "notificationType": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "keyword": {
       "type": "string",
@@ -21,7 +21,7 @@
     },
     "token": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "count": {
       "type": "number",
