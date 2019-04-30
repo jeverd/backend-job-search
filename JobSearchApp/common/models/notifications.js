@@ -81,6 +81,7 @@ module.exports = function(Notifications) {
 	    let userID = data.userID;
 	    let token = data.token;
 	    let upsertData = {id:data.id}
+	    if (!upsertData.id) upsertData.id = null;
 	    let searchObjectsArray = [];
 	    var notificationObject = {
 	    	userID: userID,
@@ -126,7 +127,7 @@ module.exports = function(Notifications) {
 	    			return callback(err, {Status: shortlistNotification});
 	    		});
 	    	} else if (err) {
-	    		return cb(err);
+	    		return callback(err);
 	    	} else {
 	    	let countObject = {
 	    		where: {
@@ -134,11 +135,10 @@ module.exports = function(Notifications) {
 	    		}
 	    	}
 
-
 	    		jobsPost.count(countObject.where, function(err, count) {
 					notificationObject.count = count
 						if (err) return callback(err);
-					jobsPost.upsertWithWhere(upsertData, notificationObject, function(err, object) {
+					Notifications.upsertWithWhere(upsertData, notificationObject, function(err, object) {
 						if (err) return callback(err);
 						return callback(err, {Notifications: object})
 
