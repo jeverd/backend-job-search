@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.6.2",
     "google": "^2.1.0",
     "indeed-scraper": "^2.2.0",
     "job-scraper": "^2.4.0",
@@ -20,6 +21,7 @@
     "scrape-indeed": "^0.5.0",
     "text-cleaner": "^0.3.0",
     "textrank": "^1.0.5",
+    "unfluff": "^3.2.0",
     "xml-to-json-stream": "^1.1.0",
     "xml2js": "^0.4.19"
   },

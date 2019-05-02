@@ -6,24 +6,6 @@ const cheerio = require("cheerio");
 const cron = require('node-cron');
 
 
-
-
-// var getJobs = async (url) => {
-//   const browser = await pptrFirefox.launch();
-//   const page = await browser.newPage();
-//   await page.goto(url);
-//   await page.screenshot({path: 'example.png'});
-//   let bodyHTML = await page.evaluate(() => document.body.innerHTML);
-//   let $  = await cheerio.load(bodyHTML);
-//   let test = await $('.SHrHx')[4].children[0].children[0].data
-//   let description = await $('.Cyt8W.HBvzbc')
-//   console.log(test2)
-//   await browser.close();
-//   return bodyHTML
-// };
-
-
-
 var getLocations = function(cb) {
   query = {
     filter: {
@@ -39,7 +21,7 @@ var getLocations = function(cb) {
   api("GET", "/jobLocations", {}, query, function(err, response, data) {
     jsonData = JSON.parse(data);
     if (jsonData.length <= 0) {
-      return cb("NOTHING FOUND IN LOCATIONS TABLE FOR INDEED");
+      return cb("NOTHING FOUND IN LOCATIONS TABLE FOR GOOGLE");
     }
     if (err) return cb(err);
     return cb(null, jsonData);
@@ -224,6 +206,7 @@ var runScarper = function(cb) {
             return cb2();
           })
         }, function(err) {
+            console.log("google jobs done: " + item.link);
             return loopcallBack();
           });
       })
@@ -243,7 +226,7 @@ var jobExtractor  = {
   run: runScarper(function(err) {
   }),
   schedule: function(time) {
-    console.log("JOB SCRAPER STARTING: post2jobs"); 
+    console.log("JOB SCRAPER STARTING: googleJobs"); 
     cron.schedule(time, () => {
       console.log("STARTING post2jobs");
       runScarper(function(err) {

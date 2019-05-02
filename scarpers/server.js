@@ -1,22 +1,26 @@
 
 
-//This is the server file, to start the scrapers. 
+// //This is the server file, to start the scrapers. 
 
-//TODO, do this via the db, instead of hardcoding...
-//TOD), instead of getting link to the page, get link to the acutal apply page. 
+// //TODO, do this via the db, instead of hardcoding...
+// //TOD), instead of getting link to the page, get link to the acutal apply page. 
 
-//INDEED SCRAPER
+// //INDEED SCRAPER
 const indeed = require("./indeed-scaprer");
 
-let cron_time = '0 * * * *';   //run every hour.
+let cron_time = '* * * * *';   //run every hour.
 indeed.schedule(cron_time);  //schedule first;
 indeed.run;  //run once when server.js is ran.
 
 
-// const jobBank = require("./job-bank-scarper");
+const google = require("./googleJobs");
+google.schedule("0 8 * * *")
+google.run;
 
-// jobBank.schedule(cron_time);  //schedule first;
-// jobBank.run;  //run once when server.js is ran.
+// // const jobBank = require("./job-bank-scarper");
+
+// // jobBank.schedule(cron_time);  //schedule first;
+// // jobBank.run;  //run once when server.js is ran.
 
 
 
@@ -27,10 +31,10 @@ post2jobs.run;  //run once when server.js is ran.
 
 
 
-const eluta = require("./eluta");
+// const eluta = require("./eluta");
 
-eluta.schedule(cron_time);  //schedule first;
-eluta.run;  //run once when server.js is ran.
+// eluta.schedule(cron_time);  //schedule first;
+// eluta.run;  //run once when server.js is ran.
 
 
 

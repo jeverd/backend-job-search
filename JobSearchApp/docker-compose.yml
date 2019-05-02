@@ -1,0 +1,13 @@
+version: '3'
+
+
+services:
+
+
+  mysql-service:
+    image: mysql:5.7.13
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+    # volumes: 
+    #   - mysql-service-volume:/var/lib/mysql
+    ports: docker:4560/tcp

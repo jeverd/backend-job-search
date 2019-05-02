@@ -18,6 +18,16 @@ module.exports = function(Notifications) {
 	  returns: { arg: 'result', type: 'Object', root: true },
 	  http: { path: '/customCreate', verb: 'post' }
 	});
+	Notifications.remoteMethod('customRetrive', {
+	  accepts: [
+	    { arg: 'data', type: 'object', http: { source: 'body' } },
+	    // { arg: 'page', type:'string', required: true},
+	    { arg: 'options', type: 'object', 'http': 'optionsFromRequest' }
+
+	  ],
+	  returns: { arg: 'result', type: 'Object', root: true },
+	  http: { path: '/customRetrive', verb: 'post' }
+	});
 	Notifications.remoteMethod('createNotification', {
 	  accepts: [
 	    { arg: 'data', type: 'object', http: { source: 'body' } },
@@ -59,7 +69,24 @@ module.exports = function(Notifications) {
 	  returns: { arg: 'result', type: 'Object', root: true },
 	  http: { path: '/deleteuserID', verb: 'get' }   //"delete"
 	});
-
+	Notifications.customRetrive = function(data, options, cb) {
+		var jobsPost = app.models.jobPosts;
+		let searchObject = {
+			where: data.searchObject.where,
+			order: "id ASC"
+		}
+		jobsPost.find(searchObject, function(err, foundJobs) {
+			if (err) return cb(err);
+			//get only ids
+			let idArray = []
+			async.eachSeries(foundJobs, function(item, lb) {
+				idArray.push(item.id);
+				lb()
+			}, function(err) {
+				return cb(null, {jobs: idArray})
+			})
+		});
+	}
 	Notifications.deleteuserID = function(q, options, cb) {
 		Notifications.destroyAll({userID:q}, function(err, notification) {
 			if (err) {
@@ -73,7 +100,7 @@ module.exports = function(Notifications) {
 	}
 	
 	Notifications.customCreate = function(data, options, callback) {
-		var jobsPost = app.models.indeedJobs;
+		var jobsPost = app.models.jobPosts;
 	    let notificationTypes = data.notificationType.split("_");
 	    let keywords = data.keywords.split("_");
 	    let userID = data.userID;
@@ -144,7 +171,7 @@ module.exports = function(Notifications) {
 								if (err) return callback(err);
 							Notifications.upsertWithWhere(upsertData, notificationObject, function(err, object) {
 								if (err) return callback(err);
-								return callback(err, {Notifications: object})
+								return callback(err, {Notifications: object, SearchObject: countObject})
 
 							});
 						});

@@ -21,9 +21,6 @@ var getJobs = function(cb) {
 }
 
 
-
-
-
 var checkifPublish = function(job, cb) {       //will be used to check if job is worthy of publishing
 	//check one: if no link or title, or date or location not good
 	if (!job.title || !job.link || !job.date_post || !job.location) {
@@ -190,7 +187,7 @@ var publishing = function(cb) {
 				loopcb();
 			});
 		}, function(err) {
-			console.log("DONE");
+			console.log("DONE publishing service");
 			return cb();
 		});
 	});
@@ -198,19 +195,16 @@ var publishing = function(cb) {
 
 
 
-// var publisher = {
-//   run: publishing(function(err, data) {}),
-//   schedule: function(time) {
-//     console.log("publishing service Starting");
-//     cron.schedule(time, () => {
-//       publishing(function(err, data) {})
-//     })
-//   }
-// }
+var publisher = {
+  run: publishing(function(err, data) {}),
+  schedule: function(time) {
+    console.log("publishing service Starting");
+    cron.schedule(time, () => {
+      publishing(function(err, data) {})
+    })
+  }
+}
 
 
-publishing(function(Err) {
-	console.log("ssss")
-});
 
-// module.exports = publisher;
+module.exports = publisher;
