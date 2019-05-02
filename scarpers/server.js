@@ -13,9 +13,9 @@ indeed.schedule(cron_time);  //schedule first;
 indeed.run;  //run once when server.js is ran.
 
 
-const google = require("./googleJobs");
-google.schedule("0 8 * * *")
-google.run;
+// const google = require("./googleJobs");
+// google.schedule("0 8 * * *")
+// google.run;
 
 // // const jobBank = require("./job-bank-scarper");
 

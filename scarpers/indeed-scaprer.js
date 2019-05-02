@@ -77,10 +77,8 @@ var checkStudent = function(jobListing, cb) {
     json: data
   }, function(error, response, body) {
     if (body.predictions == '0') {
-      console.log("NOT A Student JOBS" + title);
       return cb("NOT A STUDENT JOB" + jobListing.url);
     } else {
-      console.log("GOOD TITLE" + title);
       // console.log(jobListing);
       return cb(null, jobListing);
     }
@@ -159,12 +157,12 @@ var oneJob = function(item, cb) {
       },
 
       // //step 2: Check if job is a student job
-      // function(jobListing, cb2) {
-      // 	checkStudent(jobListing, function(err, jobListing) {
-      // 		if (err) return cb2(err);
-      // 		return cb2(err,  jobListing);
-      // 	})
-      // },
+      function(jobListing, cb2) {
+      	checkStudent(jobListing, function(err, jobListing) {
+      		if (err) return cb2(err);
+      		return cb2(err,  jobListing);
+      	})
+      },
 
       //step 3:Get More info about job aka full description
       function(jobListing, cb2) {

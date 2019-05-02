@@ -106,10 +106,8 @@ var checkStudent = function(jobListing, cb) {
     json: data
   }, function(error, response, body) {
     if (body.predictions == '0') {
-      console.log("NOT A Student JOBS" + title);
       return cb("NOT A STUDENT JOB" + jobListing.url);
     } else {
-      console.log("GOOD TITLE" + title);
       // console.log(jobListing);
       return cb(null, jobListing);
     }
@@ -189,12 +187,12 @@ var oneJob = function(job, cb) {
 		  })
 		},
 		// //step 3: use analyser to filter out bad jobs.
-		// function(jobPosting, cb2) {
-		// 	checkifStudent(jobPosting, function(err, jobPosting) {
-		// 		if (err) return cb2(err);
-		// 		return cb2(err, jobPosting);
-		// 	})
-		// },
+		function(jobPosting, cb2) {
+			checkStudent(jobPosting, function(err, jobPosting) {
+				if (err) return cb2(err);
+				return cb2(err, jobPosting);
+			})
+		},
 
 
 		//step 4: upload to db
