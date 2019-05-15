@@ -2,7 +2,11 @@
 
 Our goal with Planet jobs is to build a job search app, that allows for high-school students to find jobs quickly! We get our job data from various job boards, and then run the jobs through our classfication service, which outputs jobs that are most likely suited for high-school students.
 
+
+*Ensure you have NODEJS and Python 3 installed on your laptop before proceeding.
 *Ensure you have configured your MySQL server before starting up the Loopback API server.
+*Note the frontend was done by my good friend Lucas.
+
 
 
 
