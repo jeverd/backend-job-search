@@ -1,8 +1,4 @@
-> Welcome to the backend for the Planet Jobs.
-
-[![NPM Version][npm-image]][npm-url]
-[![Build Status][travis-image]][travis-url]
-[![Downloads Stats][npm-downloads]][npm-url]
+## Welcome to the backend for the Planet Jobs.
 
 Our goal with Planet jobs is to build a job search app, that allows for high-school students to find jobs quickly! We get our job data from various job boards, and then run the jobs through our classfication service, which outputs jobs that are most likely suited for high-school students.
 
