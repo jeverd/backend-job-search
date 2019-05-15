@@ -4,9 +4,7 @@ Our goal with Planet jobs is to build a job search app, that allows for high-sch
 
 *Ensure you have configured your MySQL server before starting up the Loopback API server.
 
-## Frontend - React Native
-1. go to ```https://github.com/lnogueir/frontendJobs```
-2. follow the repos README
+
 
 ## Installation - LOOPBACK API
 1. ```Clone the repo```
@@ -14,6 +12,9 @@ Our goal with Planet jobs is to build a job search app, that allows for high-sch
 3. run ```npm install``` 
 4. run ```node . ``` to start up the loopback api
 
+## Frontend - React Native
+1. go to ```https://github.com/lnogueir/frontendJobs```
+2. follow the repos README
 
 ## Gather Job Data
 1. ```cd scrapers```
