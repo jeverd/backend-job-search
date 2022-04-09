@@ -13,7 +13,7 @@
     "google": "^2.1.0",
     "indeed-scraper": "^2.2.0",
     "job-scraper": "^2.4.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "node-cron": "^2.0.3",
     "path": "^0.12.7",
     "puppeteer": "^1.14.0",
