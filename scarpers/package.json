@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "async": "^2.6.2",
+    "async": "^2.6.4",
     "google": "^2.1.0",
     "indeed-scraper": "^2.2.0",
     "job-scraper": "^2.4.0",
